@@ -1,0 +1,1 @@
+# kemper.com.br.plugin.dataaccess.constants

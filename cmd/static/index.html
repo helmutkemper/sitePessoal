@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html>
+<header>
+    <script src="./js/util/video.js"></script>
+    <script src="./js/util/monaco_actions_youtube.js"></script>
+    <script src="./js/util/monaco_actions_code.js"></script>
+
+    <script src="./js/fontawesome/6bc51ce22b.js" crossorigin="anonymous"></script>
+
+
+    <link href="./kendo/examples/content/shared/styles/examples-offline.css" rel="stylesheet">
+    <link href="./kendo/styles/kendo.common.min.css" rel="stylesheet">
+    <link href="./kendo/styles/kendo.rtl.min.css" rel="stylesheet">
+    <link href="./kendo/styles/kendo.default.min.css" rel="stylesheet">
+    <link href="./kendo/styles/kendo.default.mobile.min.css" rel="stylesheet">
+    <script src="./kendo/js/jquery.min.js"></script>
+    <script src="./kendo/js/jszip.min.js"></script>
+    <script src="./kendo/js/kendo.all.min.js"></script>
+    <script src="./kendo/examples/content/shared/js/console.js"></script>
+
+    <!-- background-color: #5a3030; -->
+    <style>
+        html, body, #container {
+            position: fixed;
+            left: 0%;
+            top: 0px;
+            width: 80%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            z-index: -1;
+        }
+
+        .monaco-editor-adjust {
+            margin-top: 58px !important;
+            font-size: 12px;
+        }
+
+        .decorBold {
+            background-color: #255308;
+            cursor: pointer;
+            font-weight: normal;
+            font-style: oblique;
+        }
+        .decorNone {
+            background-color: transparent;
+            cursor: pointer;
+            font-weight: normal;
+            font-style: oblique;
+        }
+
+    </style>
+    <style>
+
+        .k-sprite {
+            width: 30px;
+            line-height: 30px;
+            font-size: 23px;
+            vertical-align: bottom !important;
+            color: #6c829f;
+        }
+
+        #mediaPlayer {
+            min-width: 235px;
+            height: 100%;
+        }
+
+        .k-prompt-container, .k-window-content {
+            padding: 0;
+            position: relative;
+            outline: 0;
+        }
+
+        #megaStore {
+            position: fixed;
+            top: 0;
+            left: 0px;
+            border: 0px;
+            margin: 0px auto;
+        }
+
+        #menu {
+            background: #ffffff;
+            width: 10000px;
+        }
+        #menu .k-menu .k-item, .k-menu.k-header {
+            border-style: none;
+            color: #424d5d;
+        }
+
+        #menu .k-menu .k-item, .k-menu-scroll-wrapper .k-item, .k-menu-scroll-wrapper.horizontal>.k-item, .k-popups-wrapper .k-item, .k-popups-wrapper.horizontal>.k-item, .k-widget.k-menu-horizontal>.k-item {
+            border-style: none;
+            color: #424d5d;
+        }
+        .menuWith {
+            margin-left: 15px !important;
+            height: 30px;
+            alignment: left !important;
+            vertical-align: middle !important;
+        }
+        .k-menu-group {
+            min-width: 181px;
+        }
+
+        .form-input--width-adjust{
+            width: 100%;
+        }
+
+        .form-monaco-adjust{
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+        }
+
+        .k-textbox .k-icon {
+            top: 50%;
+            margin: -8px 0 0;
+            position: absolute;
+            left: 4px;
+        }
+
+        .form-input-adjust{
+            width: 100%;
+            height: 300px !important;
+        }
+
+        #menu h2 {
+            font-size: 1em;
+            text-transform: uppercase;
+            padding: 0px 10px;
+        }
+        #template img {
+            margin: 0px 20px 0 0;
+            float: left;
+        }
+        #template {
+            width: 380px;
+        }
+        #template ol {
+            float: left;
+            margin: 0 0 0 30px;
+            padding: 10px 10px 0 10px;
+        }
+        #template:after {
+            content: ".";
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden;
+        }
+        #template .k-button {
+            float: left;
+            clear: left;
+            margin: 5px 0 5px 12px;
+        }
+
+        .armchair {
+            float: left;
+            margin: 10px 50px 160px 30px;
+            text-align: center;
+            vertical-align:middle;
+            horiz-align:center;
+        }
+
+
+        .fieldlist {
+            margin: 0;
+            padding: 0;
+        }
+
+        .windowContent{
+            overflow: scroll;
+        }
+
+        #controlPanelForgotPassword, #controlPanelCode, #controlPanelLogin, #window .adjust {
+            margin: 0 auto 4.5em;
+            padding: 3em;
+            border: 0 none;
+        }
+
+        .fieldlist input {
+            width: 100%;
+        }
+        .fieldlist li {
+            list-style: none;
+            padding-bottom: 0;
+        }
+
+        .fieldlist .spanAdjust {
+            display: block;
+            height: 15px;
+        }
+
+        .fieldlist label {
+            display: block;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+            color: #444;
+            padding-bottom: 3px;
+        }
+
+    </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+        button{
+            outline: none;
+            margin: 10px;
+            width: 50px;
+            background: #2b396e;
+            border: 1px solid #7ad1d7;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #fff;
+            padding: 5px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .menuContainer{
+            width:50px;
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: normal;
+            background-color:#2b396e;
+            border-radius: 1rem;
+            color: #fff;
+            transition: all 0.5s;
+            overflow: hidden;
+        }
+        .light{
+            background-color:#7ad1d7;
+        }
+        .wide{
+            width: 250px;
+        }
+        /*style navicon bar*/
+        .show{
+            display:block;
+            background-color:initial;
+            width:40px;
+            height:30px;
+            border:none;
+            outline:none;
+            cursor:pointer;
+            align-self: flex-end;
+        }
+        .show span{
+            width:100%;
+            height:5px;
+            display:block;
+            background-color:#fff;
+            border-radius: 2px;
+            transition:all 0.5s;
+        }
+        .show span:first-of-type{
+            transform:translateY(-3px);
+        }
+        .show span:last-of-type{
+            transform:translateY(3px);
+        }
+        .show .show-icon:first-of-type{
+            display: none;
+        }
+        .show .show-icon:nth-of-type(2){
+            transform:rotate(45deg);
+        }
+        .show .show-icon:last-of-type{
+            transform:rotate(-45deg) translate(3px,-3px);
+        }
+        /*style portfolio*/
+        .portf{
+            margin-bottom: 1rem;
+        }
+        .portf .img{
+            width:50px;
+            height:50px;
+            border-radius: 50%;
+            background: url('https://cdn.pixabay.com/photo/2017/03/05/17/34/boy-2119178_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            margin: auto;
+            cursor: pointer;
+        }
+        h2,h3{
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s;
+            font-family: 'Roboto', sans-serif;
+        }
+        h2{
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        h3{
+            font-size: 0.5rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.5);
+        }
+        h2.big-font{
+            font-size: 1.2rem;
+        }
+        h3.big-font{
+            font-size: 1rem;
+        }
+        /*style menu*/
+        .menu{
+            list-style: none;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content:center;
+            align-items: center;
+        }
+        .menu li{
+            cursor: pointer;
+            width: 100%;
+            text-align:left;
+            transition: background 0.4s linear;
+        }
+        .menu li:last-of-type{
+            margin-bottom: 0;
+        }
+        .menu li:hover{
+            background-color:rgba(255, 255, 255, 0.25);
+
+        }
+        .menu a{
+            display: none;
+            color: #fff;
+            text-decoration: none;
+            font-family: sans-serif;
+            text-align: center;
+            transition: all 0.5s;
+            font-family: 'Roboto', sans-serif;
+        }
+        .menu a.show-anchor{
+            display: inline-block;
+            font-size: 1rem;
+        }
+        .menu li .icons{
+            display: inline-block;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+        .menu a.show-anchor li{
+            text-align:left;
+        }
+    </style>
+</header>
+<body>
+
+<script src="./node_modules/monaco-editor/min/vs/loader.js"></script>
+
+<!-- https://www.youtube.com/embed/5oYfO5qPv44 -->
+<!-- iframe id="video" class="video" src="" width="333" height="187" frameborder="0" allowfullscreen="allowfullscreen"></iframe -->
+
+<div id="example">
+    <div id="megaStore">
+        <ul id="menu">
+
+        </ul>
+    </div>
+
+
+</div>
+<div id="container" class="monaco-editor-adjust"></div>
+<!--div id="tree">
+    <ul id="treeview"></ul>
+</div-->
+<!-- font awsome -->
+<div class="menuContainer">
+    <button class="show">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <ul id="menuContainer_content" class="menu"><li><i class="fa fa-home icons" aria-hidden="true"></i><a href="#">Home</a></li><li><i class="fa fa-envelope icons" aria-hidden="true"></i><a href="#">Messages</a></li><li><i class="fa fa-cog icons" aria-hidden="true"></i><a href="#">Setting</a></li><li><i class="fa fa-user-o icons" aria-hidden="true"></i><a href="#">Profile</a></li><li><i class="fa fa-calendar-o icons" aria-hidden="true"></i><a href="#">Calender</a></li></ul>
+</div><div id="youtube">
+    <div id="mediaPlayer"></div>
+</div>
+
+</body>
+</html>
+
+<div id="window" class="k-content">
+    <div class="armchair">
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <img src="./kendo/logos/logo_nova_200.png" alt="Kemper logo" />
+        <h3>C é vida;<br>Golang é uma evolução do C!</h3>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>Atualizado em 15/02/2021</p>
+    </div>
+    <div class="adjust">
+        <p>&nbsp;</p>
+        <p>Meu nome é <b>Helmut Kemper</b> e eu sou desenvolvedor Golang com uns 5 anos de expiencia em Go, além de uma vida de experiência em outras linguagens de programação.</p>
+        <p>&nbsp;</p>
+        <p>Minha ideia com este projeto é ajudar a comunidade de duas formas:</p>
+        <p>&nbsp;</p>
+        <p><b>Conversando com o dev</b> - Uma série de vídeos com o intuito de compartilhar minha experiência de programação com quem já programa e discutir uma forma melhor de interagir com o código.</p>
+        <p>&nbsp;</p>
+        <p><b>Projeto Sérgio Desenvolvedor</b> - Uma tentativa de tornar um Guri muito gente fina (e um péssimo humorista) em um excelente desenvovedor.</p>
+        <p>&nbsp;</p>
+        <p>Para isto, vamos usar vídeos do youtube sincronizados ccom o <a href="https://github.com/microsoft/monaco-editor">Monaco</a>, editor da Microsoft, em uma tentativa experimental de explicar código usando vídeo com um consumo de banda muito manor.</p>
+        <p>&nbsp;</p>
+        <p>O projeto é totalmente gratuito, mas, você sempre pode me ajudar a pagar os servidores passando um pix.</p>
+    </div>
+</div>
+
+<div id="controlPanelCode" class="k-content">
+    <div class="windowContent">
+        <ul class="adjust fieldlist">
+            <li>
+                <label for="menu-to-place">Menu</label>
+                <input id="menu-to-place" placeholder="Select..." type="text" class="form-input--width-adjust"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="publication-date">Conversation Title</label>
+                <input id="publication-date" class="k-textbox form-input--width-adjust"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="conversation-title">Conversation Title</label>
+                <input id="conversation-title" type="text" class="k-textbox"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="code-language">Code language</label>
+                <input id="code-language" placeholder="Select..." type="text" class="form-input--width-adjust"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="video-code">Youtube code from video</label>
+                <input id="video-code" type="text" class="k-textbox"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="source-code">Source-Code</label>
+                <div id="source-code" class="form-monaco-adjust"></div>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <button class="k-button k-primary">Save</button>
+                &nbsp;
+                <button class="k-button">Delete</button>
+                &nbsp;
+                <button class="k-button">Cancel</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="controlPanelLogin" class="k-content">
+    <div class="windowContent">
+        <ul class="adjust fieldlist">
+            <li>
+                <label for="login-mail">E-mail</label>
+                <input id="login-mail" class="k-textbox form-input--width-adjust"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <label for="login-password">Password</label>
+                <input id="login-password" type="password" class="k-textbox"/>
+            </li>
+            <span class="spanAdjust"></span>
+            <li>
+                <button class="k-button k-primary">Login</button>
+                &nbsp;
+                <button class="k-button">I forgot my password</button>
+                &nbsp;
+                <button class="k-button">Cancel</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="controlPanelForgotPassword" class="k-content">
+    <div class="windowContent">
+        <form id="ticketsForm" class="f-form" onsubmit="return false">
+            <ul class="adjust fieldlist">
+                <li>
+                    <label for="forgot-mail">E-mail</label>
+                    <input id="forgot-mail" type="email" class="k-textbox form-input--width-adjust" required/>
+                </li>
+                <span class="spanAdjust"></span>
+                <li>
+                    <button type="submit" id="forgot-password-send-button" class="k-button k-primary">Send</button>
+                </li>
+            </ul>
+        </form>
+    </div>
+</div>
+
+<script>
+    const videoDataUrl = "./saveTimeLine";
+    let oldDecorations = [];
+    let editor;
+    let selectionData;
+    let videoTime = 0;
+    let youtubeCode;
+    let youtubeActionList = [];
+
+    window.onresize = function (){
+        editor.layout();
+    };
+
+    require.config({ paths: { 'vs': './node_modules/monaco-editor/min/vs' }});
+    window.MonacoEnvironment = { getWorkerUrl: () => proxy };
+
+    let proxy = URL.createObjectURL(new Blob([` self.MonacoEnvironment = { baseUrl: './node_modules/monaco-editor/min/' }; `], { type: 'text/javascript' }));
+
+    require(["vs/editor/editor.main"], function () {
+        const theme = {
+            base: 'vs-dark',
+            inherit: true,
+            colors: {
+                "editor.background": '#222'
+            },
+            rules: []
+        }
+
+        monaco.editor.defineTheme('myTheme', theme)
+        editor = monaco.editor.create(document.getElementById('container'), {
+            value: [
+                'package main\n' +
+                '\n' +
+                'import (\n' +
+                '\t"fmt"\n' +
+                ')\n' +
+                '\n' +
+                'func main() {\n' +
+                '\tfmt.Println("Hello, playground")\n' +
+                '}\n'
+            ].join('\n'),
+            fontSize: "14px",
+            language: 'go',
+            theme: 'myTheme'
+        });
+
+
+
+        // {
+        //     "selection": {
+        //         "startLineNumber": 9,
+        //         "startColumn": 20,
+        //         "endLineNumber": 9,
+        //         "endColumn": 20,
+        //         "selectionStartLineNumber": 9,
+        //         "selectionStartColumn": 20,
+        //         "positionLineNumber": 9,
+        //         "positionColumn": 20
+        // },
+        //     "secondarySelections": [],
+        //     "modelVersionId": 1,
+        //     "oldSelections": [
+        //     {
+        //         "startLineNumber": 12,
+        //         "startColumn": 5,
+        //         "endLineNumber": 16,
+        //         "endColumn": 6,
+        //         "selectionStartLineNumber": 12,
+        //         "selectionStartColumn": 5,
+        //         "positionLineNumber": 16,
+        //         "positionColumn": 6
+        //     }
+        // ],
+        //     "oldModelVersionId": 1,
+        //     "source": "mouse",
+        //     "reason": 3
+        // }
+        editor.onDidChangeCursorPosition((e) => {
+            selectionData = e;
+            //console.log(JSON.stringify(e));
+        });
+
+        // {
+        //     "selection": {
+        //         "startLineNumber": 9,
+        //         "startColumn": 20,
+        //         "endLineNumber": 9,
+        //         "endColumn": 20,
+        //         "selectionStartLineNumber": 9,
+        //         "selectionStartColumn": 20,
+        //         "positionLineNumber": 9,
+        //         "positionColumn": 20
+        // },
+        //     "secondarySelections": [],
+        //     "modelVersionId": 1,
+        //     "oldSelections": [
+        //     {
+        //         "startLineNumber": 12,
+        //         "startColumn": 5,
+        //         "endLineNumber": 16,
+        //         "endColumn": 6,
+        //         "selectionStartLineNumber": 12,
+        //         "selectionStartColumn": 5,
+        //         "positionLineNumber": 16,
+        //         "positionColumn": 6
+        //     }
+        // ],
+        //     "oldModelVersionId": 1,
+        //     "source": "mouse",
+        //     "reason": 3
+        // }
+        editor.onDidChangeCursorSelection((e) => {
+            selectionData = e;
+            //console.log(JSON.stringify(e));
+        });
+
+//Register a custom snippet
+        monaco.languages.registerCompletionItemProvider('go', {
+            provideCompletionItems: () => {
+                return [
+                    {
+                        label: 'for: Array',
+                        kind: monaco.languages.CompletionItemKind.Snippet,
+                        documentation: 'Iterate over an Array',
+                        insertText: [
+                            'for(let i=0; i < arr.length; i++){',
+                            '\tlet elem = arr[i];',
+                            '',
+                            '}'].join('\n')
+                    }
+                ]
+            }
+        });
+
+//Add custom action
+        editor.addAction({
+            id: 'insert-text-at-cusor-command',
+            label: 'Command Snippet',
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.F10],
+            contextMenuGroupId: 'snippets',
+            contextMenuOrder: 1.5,
+            run: function (ed) {
+                editor.focus()
+                editor.trigger('keyboard', 'type', {text: "for"});
+            }
+        });
+
+        editor.addAction({
+            id: "setReadOnly",
+            label: "Set read only",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_R],
+            contextMenuGroupId: "0codeVideoGroup",
+            contextMenuOrder: 0.1,
+            run: function() {
+                editor.updateOptions({readOnly: true});
+            }
+        });
+
+        editor.addAction({
+            id: "clearReadOnly",
+            label: "Clear read only",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KEY_R],
+            contextMenuGroupId: "0codeVideoGroup",
+            contextMenuOrder: 0.2,
+            run: function() {
+                editor.updateOptions({readOnly: false});
+            }
+        });
+
+        editor.addAction({
+            id: "clearCode",
+            label: "clear code selector",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_0],
+            contextMenuGroupId: "0codeVideoGroup",
+            contextMenuOrder: 1.0,
+            run: function() {
+                let obj = {
+                    'action': 'clear',
+                    'time': videoTime,
+                    'startLineNumber': selectionData.selection.startLineNumber,
+                    'startColumn': selectionData.selection.startColumn,
+                    'endLineNumber': selectionData.selection.endLineNumber,
+                    'endColumn': selectionData.selection.endColumn,
+                    'youtubeCode': youtubeCode
+                }
+
+                oldDecorations = editor.deltaDecorations(oldDecorations, [{
+                    range: new monaco.Range(
+                        selectionData.selection.startLineNumber,
+                        selectionData.selection.startColumn,
+                        selectionData.selection.endLineNumber,
+                        selectionData.selection.endColumn
+                    ),
+                    options: { inlineClassName: 'decorNone' }
+                },]);
+
+                // Scroll to top, in px:
+                //editor.setScrollPosition({scrollTop: 0});
+
+                //Scroll to a specific line:
+                //editor.revealLine(15);
+
+                //Scroll to a specific line so it ends in the center of the editor:
+                //editor.revealLineInCenter(15);
+
+                //Move current active line:
+                //editor.setPosition({column: 1, lineNumber: 3});
+
+                appendToYoutubeActionList(obj);
+                sendVideoData(obj);
+            }
+        });
+
+        editor.addAction({
+            id: "selectCode",
+            label: "set code selector",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_1],
+            contextMenuGroupId: "0codeVideoGroup",
+            contextMenuOrder: 2.0,
+            run: function() {
+                let obj = {
+                    'action': 'selection',
+                    'time': videoTime,
+                    'startLineNumber': selectionData.selection.startLineNumber,
+                    'startColumn': selectionData.selection.startColumn,
+                    'endLineNumber': selectionData.selection.endLineNumber,
+                    'endColumn': selectionData.selection.endColumn,
+                    'youtubeCode': youtubeCode
+                }
+editor.readOnly = false
+                oldDecorations = editor.deltaDecorations(oldDecorations, [{
+                    range: new monaco.Range(
+                        selectionData.selection.startLineNumber,
+                        selectionData.selection.startColumn,
+                        selectionData.selection.endLineNumber,
+                        selectionData.selection.endColumn
+                    ),
+                    options: { inlineClassName: 'decorBold' }
+                },]);
+
+                //editor.revealLineInCenter(selectionData.selection.startLineNumber);
+
+                appendToYoutubeActionList(obj);
+                sendVideoData(obj);
+            }
+        });
+
+        editor.addAction({
+            id: "mediaPlayerFunctionPlay",
+            label: "Reproduzir vídeo",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_2],
+            contextMenuGroupId: "1videoPlayer",
+            contextMenuOrder: 1.0,
+            run: function() {
+                editor.focus();
+                mediaPlayer.play();
+            }
+        });
+
+        editor.addAction({
+            id: "mediaPlayerFunctionPause",
+            label: "Pausar vídeo",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_3],
+            contextMenuGroupId: "1videoPlayer",
+            contextMenuOrder: 2.0,
+            run: function() {
+                editor.focus();
+                mediaPlayer.pause();
+            }
+        });
+
+        editor.addAction({
+            id: "mediaPlayerFunctionStop",
+            label: "Parar vídeo",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_4],
+            contextMenuGroupId: "1videoPlayer",
+            contextMenuOrder: 3.0,
+            run: function() {
+                editor.focus();
+                mediaPlayer.stop();
+            }
+        });
+
+        editor.addAction({
+            id: "mediaPlayerFunctionMute",
+            label: "Silenciar vídeo",
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_5],
+            contextMenuGroupId: "1videoPlayer",
+            contextMenuOrder: 4.0,
+            run: function() {
+                editor.focus();
+                mediaPlayer.mute(!mediaPlayer.mute());
+            }
+        });
+
+        require.config({ paths: { 'vs': './node_modules/monaco-editor/esm/vs' }});
+        let menus = require('vs/platform/actions/common/actions').MenuRegistry._menuItems;
+
+        let contextMenuEntry = [...menus].find(entry => entry[0]._debugName === "EditorContext")
+        let contextMenuLinks = contextMenuEntry[1]
+
+        let removableIds = ["editor.action.clipboardCopyAction", "editor.action.clipboardPasteAction", "vs.editor.ICodeEditor:1:clearCode", "vs.editor.ICodeEditor:1:selectCode", "vs.editor.ICodeEditor:1:videoCode"]
+
+        let removeById = (list, ids) => {
+            let node = list._first
+            do {
+                let shouldRemove = ids.includes(node.element?.command?.id)
+                if (shouldRemove) { list._remove(node) }
+            } while ((node = node.next))
+        }
+
+        //removeById(contextMenuLinks, removableIds)
+
+        // Add a content widget (scrolls inline with text)
+        var contentWidget = {
+            domNode: null,
+            getId: function() {
+                return 'my.content.widget';
+            },
+            getDomNode: function() {
+                if (!this.domNode) {
+                    this.domNode = document.createElement('div');
+                    this.domNode.innerHTML = '<img width="100px" height="100px" src="https://placeimg.com/100/100/any" />';
+                }
+                return this.domNode;
+            },
+            getPosition: function() {
+                return {
+                    position: {
+                        lineNumber: 17,
+                        column: 38
+                    },
+                    //preference: [monaco.editor.ContentWidgetPositionPreference.ABOVE]
+                    preference: [monaco.editor.ContentWidgetPositionPreference.BELOW]
+                };
+            }
+        };
+        //editor.addContentWidget(contentWidget);
+
+
+
+        var output = document.getElementById('output');
+        function showEvent(str) {
+            while(output.childNodes.length > 6) {
+                output.removeChild(output.firstChild.nextSibling.nextSibling);
+            }
+            output.appendChild(document.createTextNode(str));
+            output.appendChild(document.createElement('br'));
+        }
+        //showEvent(output)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+        super(nls.localize('quickCommandActionInput', "Type the name of an action you want to execute"), {
+            id: 'editor.action.quickCommand',
+            label: nls.localize('QuickCommandAction.label', "Command Palette"),
+            alias: 'Command Palette',
+            precondition: null,
+            kbOpts: {
+                kbExpr: EditorContextKeys.focus,
+                primary: (browser.isIE ? KeyMod.Alt | KeyCode.F1 : KeyCode.F1)
+            },
+            menuOpts: {
+            }
+        });
+*/
+
+    });
+
+</script>
+<script>
+    var timeOutVideo;
+    var mediaPlayer;
+    var notification;
+    $(document).ready(function() {
+
+
+        //treeview ********************************************************************************************************************
+        $("#treeview").kendoTreeView({
+            template: "<span class='k-sprite #= item.icon #' style='color: #= item.text #'>#= item.text # color:#: item.color #</span>",
+            dataSource: [
+                {
+                    text: "green",
+                    color: "green",
+                    //icon: "folder",
+                    items: [
+                        {
+                            text: "yellow",
+                            color: "yellow",
+                            //icon: "image"
+                        },
+                        {
+                            text: "red",
+                            color: "red",
+                            //icon: "pdf"
+                        }
+                    ]
+                },
+                {
+                    text: "blue",
+                    color: "blue",
+                    //icon: "html"
+                }
+            ]
+        });
+        //treeview ********************************************************************************************************************
+
+
+
+
+
+
+        notification = $("#notification").kendoNotification({
+            position: {
+                pinned: true,
+                top: 30,
+                right: 30
+            },
+            autoHideAfter: 0,
+            stacking: "down",
+            templates: [{
+                type: "error",
+                template: $("#errorTemplate").html()
+            }]
+
+        }).data("kendoNotification");
+
+      let dataSourceMenu = new kendo.data.HierarchicalDataSource({
+        transport: {
+          read: {
+            url: "/datasource/menu",
+            dataType: "json"
+          }
+        },
+        schema: { data: 'data' }
+      });
+
+        $("#menu").kendoMenu(
+          {
+            select: onMenuSelect,
+            dataSource: dataSourceMenu,
+            dataTextField: "text",
+          }
+        );
+
+        var myWindow = $("#window");
+        var controlPanelCode = $("#controlPanelCode");
+        var winYoutube = $("#youtube");
+        var loginWindow = $("#controlPanelLogin");
+        var forgotPasswordWindow = $("#controlPanelForgotPassword");
+
+        function onMenuSelect(e) {
+            switch ($(e.item).children(".k-link").text()) {
+                case "Sobre mim":
+                    myWindow.data("kendoWindow").open().center();
+                    break
+                case "Kemper.com.br":
+                    alert("funciona");
+                    break;
+                case "Login":
+                    loginWindow.data("kendoWindow").open().center();
+                    break;
+                case "New content":
+                    controlPanelCode.data("kendoWindow").open().center();
+                    break
+
+            }
+        }
+
+        winYoutube.kendoWindow({
+            position: {
+                top: "5%",
+                left: "70%",
+            },
+            content: {
+                width: "100%",
+                height: "100%"
+            },
+            width: "365px",
+            height: "208px",
+            title: "Aula",
+            visible: false,
+            actions: [
+                "Maximize",
+                "Close"
+            ],
+            open: function () {
+                mediaPlayer = $("#mediaPlayer").kendoMediaPlayer({
+                    autoPlay: true,
+                    fullScreen: false,
+                    navigatable: false,
+                    play: function(){
+                        editor.focus()
+                    },
+                    pause: function(){
+                        editor.focus()
+                    },
+                    end: function(){
+                        editor.focus()
+                    },
+                    ready: function(){
+                        editor.focus()
+                    },
+                    timeChange: function(){
+                        editor.focus()
+                    },
+                    volumeChange: function(){
+                        editor.focus()
+                    },
+                    resize: function() {
+                        console.log(mediaPlayer.width);
+                        console.log(mediaPlayer.height);
+                    },
+                    media: {
+                        source: "https://www.youtube.com/watch?v=5oYfO5qPv44"
+                    }
+                }).data("kendoMediaPlayer");
+            },
+            close: function() {
+                mediaPlayer.stop();
+            }
+        }).data("kendoWindow").open();
+
+        myWindow.kendoWindow({
+            width: "600px",
+            height: "400px",
+            title: "Sobre mim",
+            visible: false,
+            actions: [
+                "Close"
+            ]
+        }).data("kendoWindow").center();
+
+      let dataSourcemenuClassroom = new kendo.data.HierarchicalDataSource({
+        transport: {
+          read: {
+            url: "/datasource/menuClassRoom",
+            dataType: "json"
+          }
+        },
+        schema: { data: 'data' }
+      });
+      $("#menu-to-place").kendoDropDownTree({
+            placeholder: "Select ...",
+            filter: "startswith",
+            dataTextField: "text",
+            dataValueField: "text",
+            dataSource: dataSourcemenuClassroom,
+            change: function(e) {
+                if (typeof this.value() === "object") {
+                    notification.show({
+                        title: "Wrong Menu Item",
+                        message: "Please select another item from menu."
+                    }, "error");
+                } else {
+                    console.log('e.value:', this.value());
+                    notification.hide();
+                }
+            }
+        });
+
+        let dataSourceLanguages = new kendo.data.HierarchicalDataSource({
+          transport: {
+            read: {
+              url: "/datasource/languages",
+              dataType: "json"
+            }
+          },
+          schema: { data: 'data' }
+        });
+        $("#code-language").kendoDropDownTree({
+            placeholder: "Select ...",
+            filter: "startswith",
+            dataSource: dataSourceLanguages,
+            dataTextField: "name",
+            dataValueField: "id"
+        });
+
+        controlPanelCode.kendoWindow({
+            width: "600px",
+            height: "400px",
+            title: "Conversation setup",
+            scrollable: true,
+            visible: false,
+            actions: [
+                "Maximize",
+                "Close"
+            ],
+            open: function() {
+                this.maximize();
+                require(["vs/editor/editor.main"], function () {
+                    let editor = monaco.editor.create(document.getElementById('source-code'), {
+                        value: [].join('\n'),
+                        language: 'go',
+                        theme: 'myTheme',
+                        minimap: { enabled: false },
+                        automaticLayout: true,
+                        scrollBeyondLastLine: false
+                    });
+
+                });
+            }
+        }).data("kendoWindow").center();
+
+        loginWindow.kendoWindow({
+            width: "600px",
+            height: "220px",
+            title: "Login",
+            visible: false,
+            scrollable: false,
+            resizable: false,
+            actions: [
+                "Close"
+            ]
+        }).data("kendoWindow").center();
+
+        $("#forgot-password-send-button").kendoButton({
+            click: function() {
+
+            }
+        });
+
+        forgotPasswordWindow.kendoWindow({
+            width: "600px",
+            height: "160px",
+            title: "Login",
+            visible: false,
+            scrollable: false,
+            resizable: false,
+            actions: [
+                "Close"
+            ],
+            open: function() {
+                $("#forgot-password-send-button").kendoButton({
+                    click: function() {
+
+                    }
+                });
+                $("#forgot-password-cancel-button").kendoButton({
+                    click: function() {
+                        forgotPasswordWindow.close();
+                    }
+                });
+            },
+        }).data("kendoWindow").center().open();
+
+        $("#publication-date").kendoDatePicker({
+            format: "dd/MM/yyyy",
+        });
+
+        setInterval(function (){
+            let timeHTML = $(".k-mediaplayer-currenttime").text();
+            let timeParts = timeHTML.split(":").reverse();
+
+            videoTime = 0;
+
+            for (let i = 0; i < timeParts.length; i++) {
+                videoTime = videoTime + (parseInt(timeParts[i]) * Math.pow(60, i));
+            }
+
+            if(youtubeActionList.length === 0 ){
+                return
+            }
+
+            let currentTimeActionId;
+            let currentTimeActionInfo = {};
+            let pass = false;
+            for(let i = 0; i !== youtubeActionList.length; i += 1) {
+                currentTimeActionInfo = youtubeActionList[i];
+                currentTimeActionId = i;
+
+                if(currentTimeActionInfo.hasOwnProperty('time') === false) {
+                    currentTimeActionInfo.time = 0;
+                }
+
+                if(currentTimeActionInfo.hasOwnProperty('id') === false) {
+                    currentTimeActionInfo.id = 0;
+                }
+
+                if(currentTimeActionInfo.time === videoTime) {
+                    pass = true
+                    break
+                }
+            }
+            if(pass === false) {
+                return;
+            }
+            /*
+            let obj = {
+                        'id': 0,
+                        'action': 'clear',
+                        'time': videoTime,
+                        'startLineNumber': selectionData.selection.startLineNumber,
+                        'startColumn': selectionData.selection.startColumn,
+                        'endLineNumber': selectionData.selection.endLineNumber,
+                        'endColumn': selectionData.selection.endColumn,
+                        'youtubeCode': youtubeCode
+                    }
+             */
+
+            if(currentTimeActionInfo.action === 'selection') {
+                oldDecorations = editor.deltaDecorations(oldDecorations, [{
+                    range: new monaco.Range(
+                        currentTimeActionInfo.startLineNumber,
+                        currentTimeActionInfo.startColumn,
+                        currentTimeActionInfo.endLineNumber,
+                        currentTimeActionInfo.endColumn
+                    ),
+                    options: { inlineClassName: 'decorBold' }
+                },]);
+
+                editor.revealLineInCenter(currentTimeActionInfo.startLineNumber);
+            }
+
+            if(currentTimeActionInfo.action === 'clear') {
+                oldDecorations = editor.deltaDecorations(oldDecorations, [{
+                    range: new monaco.Range(
+                        currentTimeActionInfo.startLineNumber,
+                        currentTimeActionInfo.startColumn,
+                        currentTimeActionInfo.endLineNumber,
+                        currentTimeActionInfo.endColumn
+                    ),
+                    options: { inlineClassName: 'decorNone' }
+                },]);
+            }
+        }, 300)
+
+
+    });
+</script>
+<script>
+    var container = document.querySelector('.menuContainer'),
+        btn = document.querySelector('button'),
+        btn2 = document.querySelector('.show'),
+        headings = document.querySelectorAll('.portf h2,.portf h3'),
+        anchor = document.querySelectorAll('.menu a'),
+        spany = document.querySelectorAll('.show span'),
+        statusMenu = false,
+        content_a = '<li><i class="fa fa-home icons" aria-hidden="true"></i><a href="#">Home</a></li><li><i class="fa fa-envelope icons" aria-hidden="true"></i><a href="#">Messages</a></li><li><i class="fa fa-cog icons" aria-hidden="true"></i><a href="#">Setting</a></li><li><i class="fa fa-user-o icons" aria-hidden="true"></i><a href="#">Profile</a></li><li><i class="fa fa-calendar-o icons" aria-hidden="true"></i><a href="#">Calender</a></li>',
+        content_b = '<li><i class="fa fa-home icons" aria-hidden="true"></i><a href="#">Home</a><li><i class="fa fa-user-o icons" aria-hidden="true"></i><a href="#">Profile</a></li><li><i class="fa fa-calendar-o icons" aria-hidden="true"></i><a href="#">Calender</a></li>';
+    //document.getElementById("menuContainer_content").innerHTML = content_b;
+    btn2.addEventListener('click', function () {
+        'use strict';
+        statusMenu = !statusMenu;
+        spany.forEach(function (item) {
+            return item.classList.toggle('show-icon');
+        });
+        container.classList.toggle('wide');
+        anchor.forEach(function (item2) {
+            return item2.classList.toggle('show-anchor');
+        });
+        headings.forEach(function (item3) {
+            return item3.classList.toggle('big-font');
+        });
+
+        if (statusMenu === true) {
+            //document.getElementById("menuContainer_content").innerHTML = content_a;
+        }
+        else {
+            //document.getElementById("menuContainer_content").innerHTML = content_b;
+        }
+    }, false);
+    // inspired by Auto Layout Test designed by Catherine wang
+    // https://dribbble.com/shots/3415024-Auto-Layout-Test
+</script>
+<style>
+    /* Notifications */
+    .k-notification h3 {
+        padding: 30px 10px 5px;
+        font-size: 1em;
+        line-height: normal;
+    }
+    .k-notification img {
+        margin: 20px;
+        float: left;
+    }
+
+    /* Error template */
+    .wrong-pass {
+        width: 300px;
+        height: 100px;
+    }
+
+</style>
+
+<style>
+    #treeview .k-sprite {
+        background-image: url("./kendo/examples/content/web/treeview/coloricons-sprite.png");
+    }
+</style>
+
+<span id="notification" style="display:none;"></span>
+<script id="errorTemplate" type="text/x-kendo-template">
+    <div class="wrong-pass">
+        <img src="http://localhost:3000/static/kendo/examples/content/web/notification/error-icon.png" />
+        <h3>#= title #</h3>
+        <p>#= message #</p>
+    </div>
+</script>
