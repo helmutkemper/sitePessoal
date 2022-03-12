@@ -56,6 +56,7 @@ plugins-clean:
 .PHONY: build
 ##
 build:
+	$(MAKE) install-node
 	$(MAKE) build-site
 	$(MAKE) plugins
 	$(MAKE) open-site
@@ -73,3 +74,8 @@ build-site:
 	$(MAKE) -C ./cmd tidy
 	$(MAKE) -C ./cmd build
 	@chmod +X ./build/site.so
+
+.PHONY: install-node
+##
+install-node:
+	@npm install ./cmd/static

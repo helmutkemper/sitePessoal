@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "monaco": "file:cmd/static"
+  }
+}
