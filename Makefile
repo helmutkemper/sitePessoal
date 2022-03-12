@@ -78,4 +78,4 @@ build-site:
 .PHONY: install-node
 ##
 install-node:
-	@npm install ./cmd/static
+	$(MAKE) -C ./cmd/static install-node
